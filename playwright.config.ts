@@ -11,6 +11,7 @@ export default defineConfig({
     baseURL: 'https://development-tms.elumadevqafeature.com/',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    headless: true,
   },
 
   projects: [
