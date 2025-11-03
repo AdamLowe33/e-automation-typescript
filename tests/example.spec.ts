@@ -6,6 +6,7 @@ test.describe('Example Tests', () => {
     
     const title = await page.title();
     expect(title).toContain('Playwright');
+    await page.close();
   });
 
   test('has get started link', async ({ page }) => {
@@ -13,5 +14,6 @@ test.describe('Example Tests', () => {
 
     await page.getByRole('link', { name: 'Get started' }).click();
     await expect(page).toHaveURL(/.*intro/);
+    await page.close();
   });
 });

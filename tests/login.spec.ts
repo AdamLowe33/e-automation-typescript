@@ -15,18 +15,21 @@ test.describe('Login Tests', () => {
     const homePage = new HomePage(page);
     await expect(page).toHaveURL(/.*home/);
     expect(await homePage.isUserProfileVisible()).toBeTruthy();
+    await page.close();
   });
 
-  test('should show error message with invalid credentials', async () => {
+  test('should show error message with invalid credentials', async ({ page }) => {
     await loginPage.login('invaliduser', 'wrongpassword');
     
     expect(await loginPage.isErrorVisible()).toBeTruthy();
     const errorMsg = await loginPage.getErrorMessage();
     expect(errorMsg).toContain('Invalid credentials');
+    await page.close();
   });
 
-  test('should have correct page title', async () => {
+  test('should have correct page title', async ({ page }) => {
     const title = await loginPage.getTitle();
     expect(title).toBe('Login Page');
+    await page.close();
   });
 });
