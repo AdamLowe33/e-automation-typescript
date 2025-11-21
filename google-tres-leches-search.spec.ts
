@@ -1,0 +1,28 @@
+import { test, expect } from '@playwright/test';
+
+test('Navigate to Google and search for Tres Leches Cake', async ({ page }) => {
+  // Go to Google
+  await page.goto('https://www.google.com');
+
+  // Handle potential cookie consent dialog (varies by region)
+  const consentButtons = page.locator('button:has-text("I agree"), button:has-text("Accept all"), button:has-text("I consent")');
+  if ((await consentButtons.count()) > 0) {
+    await consentButtons.first().click();
+  }
+
+  // Find the search box and perform a search
+  const searchBox = page.locator('input[name="q"]');
+  await searchBox.waitFor({ state: 'visible' });
+  await searchBox.fill('Tres Leches Cake');
+  await searchBox.press('Enter');
+
+  // Wait for search results
+  await page.waitForSelector('#search');
+
+  // Basic assertions
+  await expect(page).toHaveURL(/q=/);
+  await expect(page.locator('#search')).toBeVisible();
+
+  // Optional: verify the page title contains the query
+  await expect(page).toHaveTitle(/Tres Leches Cake/i);
+});
