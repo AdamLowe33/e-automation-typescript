@@ -1,0 +1,45 @@
+File: google-search.spec.ts
+
+import { test, expect } from '@playwright/test';
+import type { Page } from '@playwright/test';
+
+// Helper to dismiss Google consent banner if present
+async function dismissGoogleConsent(page: Page) {
+  const selectors = [
+    'button:has-text("I agree")',
+    'button:has-text("I AGREE")',
+    'button:has-text("Accept all")',
+    'button:has-text("Accept Cookies")',
+    'button:has-text("Accept")',
+  ];
+  for (const sel of selectors) {
+    const btn = page.locator(sel);
+    if (await btn.count() > 0) {
+      try {
+        await btn.first().click({ timeout: 3000 });
+        return;
+      } catch {
+        // ignore and continue trying other selectors
+      }
+    }
+  }
+}
+
+test('Navigate to Google and search for Tres Leches Cake', async ({ page }) => {
+  await page.goto('https://www.google.com/');
+  await dismissGoogleConsent(page);
+
+  const searchBox = page.locator('input[name="q"]');
+  await searchBox.waitFor({ state: 'visible' });
+  await searchBox.fill('Tres Leches Cake');
+  await searchBox.press('Enter');
+
+  // Wait for the results to load
+  await page.waitForSelector('#search', { timeout: 15000 });
+
+  // Basic validation: the page title should include the search query
+  await expect(page).toHaveTitle(/Tres Leches Cake/i);
+
+  // Optional: take a screenshot for debugging
+  // await page.screenshot({ path: 'google-search-tres-leches.png' });
+});
